@@ -1,33 +1,22 @@
 {
-    "name": "roots/bedrock",
+    "name": "plott/plottcore",
     "type": "project",
     "license": "MIT",
     "description": "WordPress boilerplate with Composer, easier configuration, and an improved folder structure",
-    "homepage": "https://roots.io/bedrock/",
+    "homepage": "https://plott.co.uk/",
     "authors": [
         {
-            "name": "Scott Walkinshaw",
-            "email": "scott.walkinshaw@gmail.com",
-            "homepage": "https://github.com/swalkinshaw"
-        },
-        {
-            "name": "Ben Word",
-            "email": "ben@benword.com",
-            "homepage": "https://github.com/retlehs"
+            "name": "Ashley Armstrong",
+            "email": "ashley@plott.co.uk",
+            "role": "Head of Web"
         }
     ],
     "keywords": [
-        "bedrock",
         "composer",
-        "roots",
         "wordpress",
         "wp",
         "wp-config"
     ],
-    "support": {
-        "issues": "https://github.com/roots/bedrock/issues",
-        "forum": "https://discourse.roots.io/category/bedrock"
-    },
     "repositories": [
         {
             "type": "composer",
@@ -36,10 +25,6 @@
                 "wpackagist-plugin/*",
                 "wpackagist-theme/*"
             ]
-        },
-        {
-            "type": "composer",
-            "url": "https://plottcreative.repo.repman.io"
         }
     ],
     "require": {
@@ -48,8 +33,10 @@
         "vlucas/phpdotenv": "^5.5",
         "oscarotero/env": "^2.1",
         "wpackagist-theme/twentytwentyfour": "^1.0",
-        "plott/plottcore-autloader": "^1.0",
-        "plott/plottcore-wordpress": "*"
+        "plott/plottcore-wordpress": "*",
+        "plott/plottcore-wp-installer": "^1.0",
+        "plott/plottcore-wp-config": "^1.0",
+        "plott/plottcore-autloader": "^1.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.7.1",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ee25b1e22671df1c61434e9594be69a5",
+    "content-hash": "defaf3fd7c50180d6af1817d24da4e71",
     "packages": [
         {
             "name": "composer/installers",
@@ -345,23 +345,17 @@
         },
         {
             "name": "plott/plottcore-autloader",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/plottcreative/plottcore-autoloader.git",
-                "reference": "f864e89989ae3acd70aa3f867b44aa0d43484e86"
+                "reference": "2c69133f43fc277894789493186061a0f68f8861"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/plottcreative/plottcore-autoloader/zipball/f864e89989ae3acd70aa3f867b44aa0d43484e86",
-                "reference": "f864e89989ae3acd70aa3f867b44aa0d43484e86",
-                "shasum": "",
-                "mirrors": [
-                    {
-                        "url": "https://plottcreative.repo.repman.io/dists/%package%/%version%/%reference%.%type%",
-                        "preferred": true
-                    }
-                ]
+                "url": "https://api.github.com/repos/plottcreative/plottcore-autoloader/zipball/2c69133f43fc277894789493186061a0f68f8861",
+                "reference": "2c69133f43fc277894789493186061a0f68f8861",
+                "shasum": ""
             },
             "require": {
                 "php": ">=7.1"
@@ -376,7 +370,7 @@
                     "Plott\\Plottcore\\": "src/"
                 }
             },
-            "notification-url": "https://plottcreative.repo.repman.io/downloads",
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -394,10 +388,10 @@
             ],
             "description": "An autoloader that enables standard plugins to be require just like mu-plugins",
             "support": {
-                "source": "https://github.com/plottcreative/plottcore-autoloader/tree/1.0.0",
-                "issues": "https://github.com/plottcreative/plottcore-autoloader/issues"
+                "issues": "https://github.com/plottcreative/plottcore-autoloader/issues",
+                "source": "https://github.com/plottcreative/plottcore-autoloader/tree/1.0.1"
             },
-            "time": "2024-06-07T14:38:25+00:00"
+            "time": "2024-06-08T22:26:53+00:00"
         },
         {
             "name": "plott/plottcore-wordpress",
@@ -508,17 +502,63 @@
             "time": "2024-06-07T15:42:38+00:00"
         },
         {
-            "name": "plott/plottcore-wp-installer",
-            "version": "1.0.0",
+            "name": "plott/plottcore-wp-config",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/plottcreative/plottcore-wp-installer.git",
-                "reference": "c824c0a5603a2d7fa0913a84dbbc0e0e95f58b7f"
+                "url": "https://github.com/plottcreative/plottcore-wp-config.git",
+                "reference": "f331c949cad15f7151f0488c0fa5b79f48f23b40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/plottcreative/plottcore-wp-installer/zipball/c824c0a5603a2d7fa0913a84dbbc0e0e95f58b7f",
-                "reference": "c824c0a5603a2d7fa0913a84dbbc0e0e95f58b7f",
+                "url": "https://api.github.com/repos/plottcreative/plottcore-wp-config/zipball/f331c949cad15f7151f0488c0fa5b79f48f23b40",
+                "reference": "f331c949cad15f7151f0488c0fa5b79f48f23b40",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpunit/phpunit": "^11.2",
+                "roave/security-advisories": "dev-master",
+                "squizlabs/php_codesniffer": "^3.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Plott\\PlottcoreWpConfig\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ashley Armstrong",
+                    "email": "ashley@plott.co.uk"
+                }
+            ],
+            "description": "Collect config values and safely define() them",
+            "support": {
+                "issues": "https://github.com/plottcreative/plottcore-wp-config/issues",
+                "source": "https://github.com/plottcreative/plottcore-wp-config/tree/1.0.1"
+            },
+            "time": "2024-06-07T15:23:50+00:00"
+        },
+        {
+            "name": "plott/plottcore-wp-installer",
+            "version": "1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/plottcreative/plottcore-wp-installer.git",
+                "reference": "1177689bab57fbeca9406dc6becae26bd278ce83"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/plottcreative/plottcore-wp-installer/zipball/1177689bab57fbeca9406dc6becae26bd278ce83",
+                "reference": "1177689bab57fbeca9406dc6becae26bd278ce83",
                 "shasum": ""
             },
             "require": {
@@ -537,7 +577,7 @@
             },
             "type": "composer-plugin",
             "extra": {
-                "class": "Plott\\Plottcore\\WordPressCorePlugin"
+                "class": "Plott\\Composer\\WordPressCorePlugin"
             },
             "autoload": {
                 "psr-4": {
@@ -551,9 +591,9 @@
             "description": "A custom installer to handle deploying WordPress with Composer",
             "support": {
                 "issues": "https://github.com/plottcreative/plottcore-wp-installer/issues",
-                "source": "https://github.com/plottcreative/plottcore-wp-installer/tree/1.0.0"
+                "source": "https://github.com/plottcreative/plottcore-wp-installer/tree/1.0.4"
             },
-            "time": "2024-06-07T15:12:57+00:00"
+            "time": "2024-06-08T22:00:16+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -904,12 +944,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "eaf1054e05e097721d376ba8779f55dd6247fcee"
+                "reference": "cde5826457b1afd988a50206946cf6512b75ac7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/eaf1054e05e097721d376ba8779f55dd6247fcee",
-                "reference": "eaf1054e05e097721d376ba8779f55dd6247fcee",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/cde5826457b1afd988a50206946cf6512b75ac7c",
+                "reference": "cde5826457b1afd988a50206946cf6512b75ac7c",
                 "shasum": ""
             },
             "conflict": {
@@ -918,7 +958,7 @@
                 "adodb/adodb-php": "<=5.20.20|>=5.21,<=5.21.3",
                 "aheinze/cockpit": "<2.2",
                 "aimeos/ai-client-html": ">=2020.04.1,<2020.10.27|>=2021.04.1,<2021.10.21|>=2022.04.1,<2022.10.12|>=2023.04.1,<2023.10.14|>=2024.04.1,<2024.04.4",
-                "aimeos/aimeos-core": ">=2022.04.1,<2022.10.17|>=2023.04.1,<2023.10.17|>=2024.04.1,<2024.04.7",
+                "aimeos/aimeos-core": "<2024.04.7",
                 "aimeos/aimeos-typo3": "<19.10.12|>=20,<20.10.5",
                 "airesvsg/acf-to-rest-api": "<=3.1",
                 "akaunting/akaunting": "<2.1.13",
@@ -1121,7 +1161,7 @@
                 "funadmin/funadmin": "<=3.2|>=3.3.2,<=3.3.3",
                 "gaoming13/wechat-php-sdk": "<=1.10.2",
                 "genix/cms": "<=1.1.11",
-                "getformwork/formwork": "<1.13",
+                "getformwork/formwork": "<1.13.1|==2.0.0.0-beta1",
                 "getgrav/grav": "<1.7.46",
                 "getkirby/cms": "<4.1.1",
                 "getkirby/kirby": "<=2.5.12",
@@ -1640,7 +1680,7 @@
                 "zendframework/zend-ldap": ">=2,<2.0.99|>=2.1,<2.1.99|>=2.2,<2.2.8|>=2.3,<2.3.3",
                 "zendframework/zend-mail": "<2.4.11|>=2.5,<2.7.2",
                 "zendframework/zend-navigation": ">=2,<2.2.7|>=2.3,<2.3.1",
-                "zendframework/zend-session": ">=2,<2.0.99|>=2.1,<2.1.99|>=2.2,<2.2.9|>=2.3,<2.3.4",
+                "zendframework/zend-session": ">=2,<2.2.9|>=2.3,<2.3.4",
                 "zendframework/zend-validator": ">=2.3,<2.3.6",
                 "zendframework/zend-view": ">=2,<2.2.7|>=2.3,<2.3.1",
                 "zendframework/zend-xmlrpc": ">=2.1,<2.1.6|>=2.2,<2.2.6",
@@ -1699,7 +1739,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-06T22:04:19+00:00"
+            "time": "2024-06-07T22:04:16+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
