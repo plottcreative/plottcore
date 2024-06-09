@@ -1,0 +1,20 @@
+{
+    "name": "plott/plott-os",
+    "description": "A starter theme for PLOTT theme",
+    "type": "wordpress-theme",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ashley Armstrong",
+            "email": "ashley@plott.co.uk"
+        }
+    ],
+    "require": {
+        "php": "*"
+    }
+}

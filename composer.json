@@ -36,7 +36,8 @@
         "plott/plottcore-wordpress": "*",
         "plott/plottcore-wp-installer": "^1.0",
         "plott/plottcore-wp-config": "^1.0",
-        "plott/plottcore-autloader": "^1.0"
+        "plott/plottcore-autloader": "^1.0",
+        "plott/wp-password-bcrypt": "^1.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.7.1",
