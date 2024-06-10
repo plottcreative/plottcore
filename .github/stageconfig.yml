@@ -4,5 +4,5 @@ description: 'The domain plus TLD and theme settings of the site to deploy'
 config:
   sitepath: 'plottcreative.co.uk/stage/'
   stagefolder: 'plottcore'
-  themepath: '/web/app/themes/armada/'
-  environment: 'stage'
+  themepath: '/web/app/themes/plottos/'
+  environment: 'staging'
