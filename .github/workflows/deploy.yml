@@ -1,0 +1,167 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - 'main'
+jobs:
+  deploy_prod:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+
+      - name: Get Site Path
+        id: sitepath
+        uses: KJ002/read-yaml@main
+        with:
+          file: './.github/config.yml'
+          key-path: '["config", "sitepath"]'
+
+      - name: Get Theme Path
+        if: success()
+        id: themepath
+        uses: KJ002/read-yaml@main
+        with:
+          file: './.github/config.yml'
+          key-path: '["config", "themepath"]'
+
+      - name: Get site environment
+        if: success()
+        id: siteenv
+        uses: KJ002/read-yaml@main
+        with:
+          file: './.github/config.yml'
+          key-path: '["config", "environment"]'
+
+      - name: Check Site Folder Existence
+        if: success()
+        id: checksite
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            if [ -d ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }} ]; then
+              echo "Site folder exists."
+              exit 0
+            else
+              echo "Site folder does not exist."
+              exit 1
+            fi
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Check For Git Repository
+        id: checkgitrepo
+        uses: fifsky/ssh-action@master
+        continue-on-error: true
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}.git
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Create Git Repository
+        id: creategitrepo
+        if: steps.checkgitrepo.outcome == 'failure'
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}
+            git init
+            git remote add origin git@github.com:${{ github.repository }}.git
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: ReCheck For Git Repository
+        id: recheckgitrepo
+        if: always()
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}.git
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Pull Changes
+        id: pullchanges
+        if: steps.recheckgitrepo.outcome == 'success'
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}
+            git checkout main
+            git pull origin main
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Create and Update .env File
+        if: steps.pullchanges.outcome == 'success'
+        id: envfile
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cp ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}.env.example ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}.env
+              echo "DB_NAME=${{ secrets.DB_NAME_PROD }}" >> ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}.env
+              echo "DB_USER=${{ secrets.DB_USER_PROD }}" >> ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}.env
+              echo "DB_PASS=${{ secrets.DB_PASS_PROD }}" >> ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}.env
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Check for Root Composer dependencies
+        if: steps.envfile.outcome == 'success'
+        id: checkrootcomposer
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cat ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}composer.json
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Install Root Composer dependencies
+        if: steps.checkrootcomposer.outcome == 'success'
+        id: installrootcomposer
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Build Theme
+        if: steps.installrootcomposer.outcome == 'success'
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{ steps.themepath.outputs.data }}
+            npm install --quiet --no-progress --unsafe-perm=true --allow-root
+            npm run prod
+            rm -rf node_modules
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Google Chat Notification
+        uses: Co-qn/google-chat-notification@releases/v1
+        with:
+          name: Web Push
+          url: ${{ secrets.GOOGLE_CHAT_WEBHOOK }}
+          status: ${{ job.status }}
+        if: always()

@@ -11,7 +11,13 @@
     "authors": [
         {
             "name": "Ashley Armstrong",
-            "email": "ashley@plott.co.uk"
+            "email": "ashley@plott.co.uk",
+            "role": "Head of Web"
+        },
+        {
+            "name": "Ewan Lockwood",
+            "email": "ewan@plott.co.uk",
+            "role": "Web Developer"
         }
     ],
     "require": {

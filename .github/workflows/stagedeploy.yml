@@ -1,0 +1,192 @@
+name: Stage Deploy
+on:
+  push:
+    branches:
+      - 'stage'
+jobs:
+  deploy_prod:
+    name: Deploy Stage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+
+      - name: Get Site Path
+        id: sitepath
+        uses: KJ002/read-yaml@main
+        with:
+          file: './.github/stageconfig.yml'
+          key-path: '["config", "sitepath"]'
+
+      - name: Get Stage Folder
+        id: stagefolder
+        uses: KJ002/read-yaml@main
+        with:
+          file: './.github/stageconfig.yml'
+          key-path: '["config", "stagefolder"]'
+
+      - name: Get Theme Path
+        if: success()
+        id: themepath
+        uses: KJ002/read-yaml@main
+        with:
+          file: './.github/stageconfig.yml'
+          key-path: '["config", "themepath"]'
+
+      - name: Get site environment
+        if: success()
+        id: siteenv
+        uses: KJ002/read-yaml@main
+        with:
+          file: './.github/stageconfig.yml'
+          key-path: '["config", "environment"]'
+
+      - name: Check Site Folder Existence
+        if: success()
+        id: checksite
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            if [ -d ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{steps.stagefolder.outputs.data}} ]; then
+              echo "Site folder exists."
+              exit 0
+            else
+              echo "Site folder does not exist."
+              echo "Creating stage folder"
+              cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data}}
+              mkdir ${{steps.stagefolder.outputs.data}}
+              exit 0
+            fi
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Check For Git Repository
+        id: checkgitrepo
+        uses: fifsky/ssh-action@master
+        continue-on-error: true
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{steps.stagefolder.outputs.data}}/.git
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Create Git Repository
+        id: creategitrepo
+        if: steps.checkgitrepo.outcome == 'failure'
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{steps.stagefolder.outputs.data}}
+            git init
+            git remote add origin git@github.com:${{ github.repository }}.git
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: ReCheck For Git Repository
+        id: recheckgitrepo
+        if: always()
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{steps.stagefolder.outputs.data}}/.git
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Pull Changes
+        id: pullchanges
+        if: steps.recheckgitrepo.outcome == 'success'
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{steps.stagefolder.outputs.data}}
+            git checkout stage
+            git pull origin stage
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Create and Update .env File
+        if: steps.pullchanges.outcome == 'success'
+        id: envfile
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cat << 'EOF' > ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{steps.stagefolder.outputs.data}}/.env
+            DB_NAME=${{ secrets.DB_NAME_STAGE }}
+            DB_USER=${{ secrets.PLOTT_STAGE_USER }}
+            DB_PASS=${{ secrets.PLOTT_STAGE_PASS }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_CHARSET=${{ secrets.DB_CHARSET }}
+            TABLE_PREFIX=${{ secrets.TABLE_PREFIX }}
+            ACF_PRO_LICENSE=${{ secrets.PLOTT_ACF_KEY }}
+            GF_LICENSE_KEY=${{ secrets.PLOTT_GRAVITY_KEY }}
+            AUTH_KEY=${{ secrets.AUTH_KEY }}
+            SECURE_AUTH_KEY=${{ secrets.SECURE_AUTH_KEY }}
+            LOGGED_IN_KEY=${{ secrets.LOGGED_IN_KEY }}
+            NONCE_KEY=${{ secrets.NONCE_KEY }}
+            AUTH_SALT=${{ secrets.AUTH_SALT }}
+            SECURE_AUTH_SALT=${{ secrets.SECURE_AUTH_SALT }}
+            LOGGED_IN_SALT=${{ secrets.LOGGED_IN_SALT }}
+            NONCE_SALT=${{ secrets.NONCE_SALT }}
+            EOF
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Check for Root Composer dependencies
+        if: steps.envfile.outcome == 'success'
+        id: checkrootcomposer
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cat ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{steps.stagefolder.outputs.data}}/composer.json
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Install Root Composer dependencies
+        if: steps.checkrootcomposer.outcome == 'success'
+        id: installrootcomposer
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{steps.stagefolder.outputs.data}}
+            composer update
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev --quiet
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Build Theme
+        if: steps.installrootcomposer.outcome == 'success'
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{steps.stagefolder.outputs.data}}${{ steps.themepath.outputs.data }}
+            npm install --quiet --no-progress --unsafe-perm=true --allow-root
+            npm run prod
+            rm -rf node_modules
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Google Chat Notification
+        uses: Co-qn/google-chat-notification@releases/v1
+        with:
+          name: Web Push
+          url: ${{ secrets.GOOGLE_CHAT_WEBHOOK }}
+          status: ${{ job.status }}
+        if: always()

@@ -1,0 +1,7 @@
+name: 'Site Config'
+description: 'The domain plus TLD and theme settings of the site to deploy'
+
+config:
+  sitepath: 'plott-test.com/public_html/'
+  themepath: 'web/app/themes/plott-os/'
+  environment: 'production'
