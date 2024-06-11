@@ -1,0 +1,57 @@
+.rotate-device{
+  display: none;
+  opacity: 0;
+  background-color: $primary;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+}
+
+@media only screen
+and (min-width: 375px)
+and (max-width: 900px)
+and (orientation: landscape) {
+  .rotate-device{
+	position: fixed;
+	z-index: 99999999999;
+	display: block;
+	opacity: 1;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	transition: 300ms all;
+	.rotate-device__container{
+	  text-align: center;
+	  padding-top: 15vh;
+	}
+	svg {
+	  filter: invert(0);
+	}
+	img{
+	  width: 150px;
+	  height: 150px;
+	  display: block;
+	  text-align: center;
+	  margin: 0 auto;
+	}
+	p{
+	  color: $white;
+	  @include font(700,1);
+	  text-transform: uppercase;
+	  font-size: 22px;
+	  display: block;
+	}
+  }
+}
+
+#rotateDevice{
+  width: 200px;
+  text-align: center;
+  margin: 0 auto;
+  svg{
+	* path{
+	  fill: white;
+	}
+  }
+}

@@ -2,7 +2,7 @@ name: Stage Deploy
 on:
   push:
     branches:
-      - 'stage'
+      - "stage"
 jobs:
   deploy_prod:
     name: Deploy Stage
@@ -15,14 +15,14 @@ jobs:
         id: sitepath
         uses: KJ002/read-yaml@main
         with:
-          file: './.github/stageconfig.yml'
+          file: "./.github/stageconfig.yml"
           key-path: '["config", "sitepath"]'
 
       - name: Get Stage Folder
         id: stagefolder
         uses: KJ002/read-yaml@main
         with:
-          file: './.github/stageconfig.yml'
+          file: "./.github/stageconfig.yml"
           key-path: '["config", "stagefolder"]'
 
       - name: Get Theme Path
@@ -30,7 +30,7 @@ jobs:
         id: themepath
         uses: KJ002/read-yaml@main
         with:
-          file: './.github/stageconfig.yml'
+          file: "./.github/stageconfig.yml"
           key-path: '["config", "themepath"]'
 
       - name: Get site environment
@@ -38,7 +38,7 @@ jobs:
         id: siteenv
         uses: KJ002/read-yaml@main
         with:
-          file: './.github/stageconfig.yml'
+          file: "./.github/stageconfig.yml"
           key-path: '["config", "environment"]'
 
       - name: Check Site Folder Existence

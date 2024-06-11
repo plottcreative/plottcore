@@ -1,0 +1,36 @@
+$footerBG: $primary;
+
+// Navigation settings
+$textAlign: right;
+$itemMargin: 20px;
+
+.main-footer {
+  background-color: $footerBG;
+  padding: 30px;
+
+  &__nav-container{
+	text-align: $textAlign;
+
+	ul{
+	  margin: 0;
+	  padding: 0;
+	  list-style: none;
+
+	  li{
+		display: inline-block;
+		@if( $textAlign == right ){
+		  margin: 0 0 0 $itemMargin;
+		} @else if( $textAlign == left ){
+		  margin: 0 $itemMargin 0 0 ;
+		} @else if( $textAlign == center ){
+		  margin: 0 $itemMargin;
+		}
+
+		a{
+		  padding: 0;
+		  text-decoration: none;
+		}
+	  }
+	}
+  }
+}

@@ -1,0 +1,41 @@
+* {
+	@include font(400, 1);
+}
+
+body {
+	position: relative;
+	margin: 0;
+}
+
+section {
+
+	display: block;
+	position: relative;
+	overflow-x: hidden;
+	width: 100%;
+
+	&[data-theme="primary"] {
+		background-color: $primary;
+	}
+
+	&[data-theme="secondary"] {
+		background-color: $secondary;
+	}
+}
+
+body {
+	&.scroll-lock {
+		position: relative;
+		overflow: hidden;
+		width: 100%;
+	}
+}
+
+/** UL styles */
+ul {
+	padding: 0 0 0 20px;
+
+	li {
+		margin-bottom: calc($paragraph-margin-bottom / 3);
+	}
+}

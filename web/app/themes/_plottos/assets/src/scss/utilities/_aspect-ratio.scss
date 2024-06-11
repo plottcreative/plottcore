@@ -1,0 +1,44 @@
+/**
+  <div style="--aspect-ratio: 4/3">
+  <img src="{imgSRC}" alt="">
+  </div>
+
+  Use these for the select field
+  1/1
+  16/9
+  9/16
+  4/3
+  3/4
+  3/2
+  2/3
+  5/9
+  9/5
+
+ */
+
+[style*="--aspect-ratio"] > :first-child {
+  width: 100%;
+}
+
+[style*="--aspect-ratio"] > img {
+  height: auto;
+  object-fit: cover;
+  object-position: center;
+}
+
+@supports (--custom:property) {
+  [style*="--aspect-ratio"] {
+	position: relative;
+  }
+  [style*="--aspect-ratio"]::before {
+	content: "";
+	display: block;
+	padding-bottom: calc(100% / (var(--aspect-ratio)));
+  }
+  [style*="--aspect-ratio"] > :first-child {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+  }
+}

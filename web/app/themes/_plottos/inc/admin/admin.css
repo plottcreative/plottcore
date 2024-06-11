@@ -1,0 +1,204 @@
+body.login{
+	max-height: 100vh;
+	background-image: url('background.jpg');
+	background-size: cover;
+	background-position: center;
+}
+
+.login h1 a{
+	background-image: url('logo.svg');
+	width: 220px;
+	height: 75px;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+p.plott-os-version {
+	color: white
+}
+
+label{
+	color: white;
+}
+
+#login{
+	transition: 300ms all;
+	float: left;
+	background-color: #000000;
+	max-width: 500px;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
+
+form#loginform{
+	border: none;
+	padding: 20px 30px 50px;
+	background-color: transparent;
+	box-shadow: none;
+	max-width: 350px;
+}
+
+#wp-submit{
+	background: transparent;
+	border: solid 2px white;
+	padding: 3px 20px 3px;
+	margin: 5px 0;
+	color: white;
+	text-transform: uppercase;
+	font-size: 16px;
+	text-align: center;
+	transition: 300ms all;
+	letter-spacing: 3px;
+}
+
+#wp-submit:hover{
+	background-color: white;
+	color: #494949;
+}
+
+.login form .input,
+.login input[type=password],
+.login input[type=text]{
+	width: 100%;
+	padding: 10px;
+	margin-bottom: 20px;
+	font-family: "Poppins",sans-serif;
+	font-weight: 600;
+	font-size: 18px;
+	color: white !important;
+	opacity: 1;
+	letter-spacing: 0;
+	line-height: 30px;
+	-webkit-transition: 300ms;
+	transition: 300ms;
+	position: relative;
+	background: rgba(255,255,255,0.3);
+	border: 0;
+}
+
+.login input[type=password]:focus,
+.login input[type=text]:focus{
+	color: black !important;
+}
+
+.login input[type=password]:focus, .login input[type=text]:focus{
+	background-color: rgba(255,255,255,1);
+}
+
+.login #backtoblog a, .login #nav a{
+	color: white;
+	transition: 300ms all;
+}
+
+.login #backtoblog a:hover, .login #nav a:hover{
+	color: rgba(white, 0.7);
+}
+
+.login form .forgetmenot{
+	margin: 20px 0;
+}
+
+.login form input[type=checkbox]{
+	appearance: none;
+	background-color: rgba(#ffffff, 0.03);
+	border: 2px transparent solid;
+	cursor: pointer;
+	display: inline-block;
+	height: 30px;
+	margin-right: 0.25rem;
+	position: relative;
+	transition: all 0.25s;
+	vertical-align: middle;
+	width: 30px;
+	z-index: 1;
+	outline: none;
+}
+
+.login form input[type=checkbox]:checked::before{
+	content:"";
+	background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2264px%22%20height%3D%2264px%22%20viewBox%3D%220%200%2064%2064%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%3Cpolygon%20id%3D%22Combined-Shape%22%20fill%3D%22black%22%20points%3D%2223%2056%2021%2054%200%2033%207%2026%2023%2042%2057%208%2064%2015%22%3E%3C%2Fpolygon%3E%3C%2Fsvg%3E");
+	background-position:center center;
+	background-repeat:no-repeat;
+	background-size:1.25rem 1.25rem;
+	height:1.65rem;
+	left:4px;
+	opacity:0;
+	position:absolute;
+	top:2px;
+	transition: opacity 0.25s;
+	width:1.65rem;
+}
+
+.login form input[type=checkbox]:focus {
+	outline:none;
+	border: 0;
+	box-shadow:0px 0px 8px rgba(#29B45A,0.75);
+}
+.login form input[type=checkbox]:checked {
+	background-color:#F7F7F7;
+	border:0.125rem #F7F7F7 solid !important;
+
+}
+.login form input[type=checkbox]:checked::before {
+	opacity:1;
+}
+
+.login form input[type=checkbox]:hover{
+	background-color:#F7F7F7;
+	border:0.125rem #F7F7F7 solid;
+	transform:scale(1.1);
+}
+
+label {
+	display:inline-block;
+	vertical-align:middle;
+}
+
+.login .button.wp-hide-pw .dashicons{
+	top: 0.65rem;
+}
+
+.dashicons-visibility:before{
+	color: white;
+}
+
+.dashicons-hidden:before{
+	color: white;
+}
+
+.login input[type=password]:focus + .dashicons-visibility:before{
+	color: black !important;
+}
+
+.login #login_error{
+	max-width: 350px;
+	width: 100%;
+	background-color:white ;
+	color:black ;
+}
+
+.login #login_error > strong{
+	margin-right: 5px;
+}
+
+.privacy-policy-link{
+	color: white;
+	transition: 300ms all;
+}
+
+.privacy-policy-link:hover{
+	color: black;
+}
+
+@media screen and (max-width: 1024px){
+	#login{
+		max-width: 100vw;
+		width: 100%;
+	}
+}

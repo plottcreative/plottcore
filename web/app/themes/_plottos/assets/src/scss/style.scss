@@ -1,0 +1,15 @@
+@import "variables/*";
+
+@import "node_modules/bootstrap/scss/bootstrap";
+
+@import "node_modules/aos/src/sass/aos";
+
+@import "utilities/*";
+
+@import "mixins/*";
+
+@import "globals/*";
+
+@import "templates/blocks/**/*.scss";
+
+@import "pages/*";

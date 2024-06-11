@@ -1,0 +1,63 @@
+/**
+Gravity Spacing
+ */
+$gf-form-gap-y: 30px;
+$gf-form-gap-x: 20px;
+
+/**
+Button Style
+ */
+$gf-ctrl-btn-bg-color: $secondary;
+$gf-ctrl-btn-bg-color-hover: $secondary;
+$gf-ctrl-btn-padding-x-md: 40px;
+$gf-ctrl-btn-padding-y-md: 12px;
+$gf-ctrl-btn-font-size-md: 20px;
+$gf-ctrl-btn-font-size-md-mobile: 16px;
+
+/**
+Font Style
+ */
+$gf-font-family-base: "Inter";
+$gf-font-size-primary: 20px;
+$gf-font-size-primary-mobile: 16px;
+
+/**
+Input Style
+ */
+$gf-border-width: 0px;
+$gf-ctrl-size: 60px;
+$gf-ctrl-size-mobile: 50px;
+
+$gf-padding-x: 20px;
+$gf-ctrl-textarea-padding-y: 20px;
+
+/**
+Label Style
+ */
+$gf-ctrl-label-font-size-primary: 16px;
+$gf-ctrl-label-font-weight-primary: 400;
+
+/**
+Select field style
+ */
+$gf-select-field-arrow: url('data:image/svg+xml,<svg width="12px" height="7.5px" viewBox="0 0 12 7.5" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Becketts-Connect" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="becketts_contactus" transform="translate(-1582, -454)" fill="%23404040"><polygon id="Fill-1" transform="translate(1588, 457.75) rotate(-360) translate(-1588, -457.75)" points="1592.66744 454 1587.99913 458.775467 1583.33141 454 1582 455.362562 1587.99971 461.5 1594 455.362562"></polygon></g></g></svg>');
+$gf-select-border-width: 2px;
+$gf-select-bg-color: transparent;
+
+/**
+Checkbox Style
+ */
+$gf-ctrl-choice-check-color: $secondary;
+
+/**
+Validation Style
+ */
+$gf-color-danger: #DC3545FF;
+$gf-form-validation-shadow: none;
+$gf-form-validation-bg-color: rgba(#DC3545FF, 0.1);
+$gf-form-validation-border-width: 0px;
+$gf-form-validation-padding-x: 15px;
+$gf-form-validation-padding-y: 15px;
+
+
+

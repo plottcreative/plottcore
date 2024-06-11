@@ -1,0 +1,42 @@
+$fonts: "Inter";
+
+@mixin font($weight: 400, $font: 1) {
+  $font-weight: $weight;
+
+  // Translate Weight
+  @if ($weight == 100) or ($weight == thin) or ($weight == ultralight) {
+	$weight: 1;
+  }
+  @if ($weight == 200) or ($weight == extralight) {
+	$weight: 2;
+  }
+  @if ($weight == 300) or ($weight == light) {
+	$weight: 3;
+  }
+  @if ($weight == 400) or ($weight == normal) or ($weight == book) {
+	$weight: 4;
+  }
+  @if ($weight == 500) or ($weight == medium) {
+	$weight: 5;
+  }
+  @if ($weight == 600) or ($weight == semibold) or ($weight == demi) {
+	$weight: 6;
+  }
+  @if ($weight == 700) or ($weight == bold) {
+	$weight: 7;
+  }
+  @if ($weight == 800) or ($weight == extrabold) {
+	$weight: 8;
+  }
+  @if ($weight == 900) or ($weight == black) or ($weight == heavy) {
+	$weight: 9;
+  }
+
+  // Assemble $font-family
+  $primary-font: nth($fonts, $font) + "-" + $weight;
+  $secondary-font: nth($fonts, $font);
+  $font-family: quote($primary-font), quote($secondary-font);
+
+  font-family: $font-family;
+  font-weight: $font-weight;
+}

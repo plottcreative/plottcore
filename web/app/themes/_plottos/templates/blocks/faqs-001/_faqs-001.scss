@@ -1,0 +1,33 @@
+.faqs-001 {
+
+	&__accordion {
+		width: 100%;
+		max-width: 500px !important;
+		overflow: hidden;
+		margin-top: 20px !important;
+		border-bottom: 2px solid rgba($black, 0.1);
+
+		&-heading {
+			position: relative;
+			padding: 20px;
+			cursor: pointer;
+		}
+
+		&-content {
+			padding: 0 20px;
+			max-height: 0;
+			overflow: hidden;
+			will-change: max-height;
+			transition: 300ms all;
+			opacity: 0;
+		}
+
+		&-active {
+			.faqs-001__accordion-content{
+				padding: 0 20px 20px;
+				opacity: 1;
+			}
+		}
+	}
+
+}

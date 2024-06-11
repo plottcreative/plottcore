@@ -1,0 +1,47 @@
+$btnMinWidth: 120px;
+$btnPadding: 10px 20px;
+
+.btn {
+  appearance: none;
+  padding: $btnPadding;
+  min-width: $btnMinWidth;
+
+  //Primary Colours
+  &--primary {
+	background-color: $primary;
+	color: $white;
+	&:hover{
+	  background-color: darken($primary, 5);
+	  color: $white;
+	}
+
+	&__outlined {
+	  background-color: transparent;
+	  border: solid 1px $primary;
+	  color: $primary;
+	  &:hover{
+		background-color: $primary;
+		color: $white;
+	  }
+	}
+  }
+  //Secondary Colours
+  &--secondary {
+	background-color: $secondary;
+	color: $white;
+	&:hover{
+	  background-color: darken($secondary, 5);
+	  color: $white;
+	}
+
+	&__outlined {
+	  background-color: transparent;
+	  border: solid 1px $secondary;
+	  color: $secondary;
+	  &:hover{
+		background-color: $secondary;
+		color: $white;
+	  }
+	}
+  }
+}

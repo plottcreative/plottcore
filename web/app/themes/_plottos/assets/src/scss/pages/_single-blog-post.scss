@@ -1,0 +1,19 @@
+.article-page {
+
+	&__header {
+		background-color: $primary;
+		padding: 180px 0 180px;
+	}
+
+	&__body {
+		padding: 100px 0 80px;
+
+		&-content{
+
+			img{
+				//@extend .img-fluid;
+			}
+
+		}
+	}
+}
