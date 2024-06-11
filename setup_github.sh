@@ -39,5 +39,4 @@ git push -u origin develop
 git checkout main
 
 # Clone the plott-os repository into web/app/themes
-cd web/app/themes
 git clone https://github.com/plottcreative/plott-os web/app/themes/plott-os
