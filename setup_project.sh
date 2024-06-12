@@ -242,7 +242,7 @@ echo "Making your DB, need somewhere to store your porn"
 
 sleep 1
 
-mysql -u root -e "CREATE DATABASE `$REPO_NAME`;"
+mysql -u root -e "CREATE DATABASE \`$REPO_NAME\`;"
 if [ $? -eq 0 ]; then
     echo "MySQL database $REPO_NAME has been created successfully."
 else
