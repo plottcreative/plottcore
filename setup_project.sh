@@ -1,10 +1,13 @@
 #!/bin/bash
-
+start_time=$(date +%s)
 # GitHub organization
 ORG_NAME="plottcreative"
 
 # Get the current directory name as the repository name
 REPO_NAME=$(basename "$PWD")
+
+#Get the Valet Env File
+VALET_ENV_FILE="../.valet-env.php"
 
 # Check if the current directory is already a git repository
 if [ -d .git ]; then
@@ -76,7 +79,7 @@ else
 fi
 
 echo "Checking if the bucket already exists..."
-sleep 2
+sleep 1
 
 if aws s3api head-bucket --bucket "$bucket_name" 2>/dev/null; then
     echo -e "${RED}Bucket ${bucket_name} already exists! Exiting...${NC}"
@@ -84,9 +87,9 @@ if aws s3api head-bucket --bucket "$bucket_name" 2>/dev/null; then
 fi
 
 echo "Making your bucket for ya lad, bear with me"
-sleep 2
+sleep 1
 aws s3api create-bucket --bucket "$bucket_name" --region "$aws_region" --create-bucket-configuration LocationConstraint="$aws_region"
-sleep 2
+sleep 1
 if [ $? -eq 0 ]; then
     echo -e "${GRN}Alright then!${NC} We're good to go with the bucket, that's been created"
 else
@@ -95,7 +98,7 @@ else
 fi
 
 iam_user_name="${REPO_NAME}-s3-user"
-sleep 2
+sleep 1
 echo "Right so your bucket has been made, let's make a user to access the bucket"
 
 aws iam create-user --user-name "$iam_user_name"
@@ -108,7 +111,7 @@ else
 fi
 
 policy_arn="arn:aws:iam::aws:policy/AmazonS3FullAccess"
-sleep 2
+sleep 1
 echo "Cool your user has been created, let's give it the right permissions"
 aws iam attach-user-policy --user-name "$iam_user_name" --policy-arn "$policy_arn"
 
@@ -119,7 +122,7 @@ else
     exit 1
 fi
 
-sleep 2
+sleep 1
 echo "Let's get some keys to unlock your door"
 
 aws iam create-access-key --user-name "$iam_user_name" > iam_user_creds.json
@@ -151,9 +154,137 @@ else
     exit 1
 fi
 
-# Clean up
-rm iam_user_creds.json
+sleep 1
 
-# Notify completion
-GIF_URL="https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif"
-open "$GIF_URL"
+# Create a CloudFront distribution
+distribution_config=$(cat <<EOF
+{
+    "CallerReference": "$theme_name-$(date +%s)",
+    "Comment": "$theme_name distribution",
+    "Enabled": true,
+    "Origins": {
+        "Items": [
+            {
+                "Id": "$bucket_name",
+                "DomainName": "$bucket_name.s3.amazonaws.com",
+                "S3OriginConfig": {
+                    "OriginAccessIdentity": ""
+                }
+            }
+        ],
+        "Quantity": 1
+    },
+    "DefaultCacheBehavior": {
+        "TargetOriginId": "$bucket_name",
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "AllowedMethods": {
+            "Items": ["GET", "HEAD"],
+            "Quantity": 2,
+            "CachedMethods": {
+                "Items": ["GET", "HEAD"],
+                "Quantity": 2
+            }
+        },
+        "Compress": true,
+        "ForwardedValues": {
+            "QueryString": false,
+            "Cookies": {
+                "Forward": "none"
+            }
+        },
+        "MinTTL": 0,
+        "DefaultTTL": 86400,
+        "MaxTTL": 31536000
+    },
+    "ViewerCertificate": {
+        "CloudFrontDefaultCertificate": true,
+        "MinimumProtocolVersion": "TLSv1.2_2021"
+    },
+    "HttpVersion": "http2",
+    "IsIPV6Enabled": true
+}
+EOF
+)
+
+distribution_id=$(aws cloudfront create-distribution --distribution-config "$distribution_config" | jq -r '.Distribution.Id')
+
+if [ -n "$distribution_id" ]; then
+    echo "CloudFront distribution $distribution_id has been created successfully."
+else
+    echo "Failed to create CloudFront distribution."
+    exit 1
+fi
+
+sleep 1
+
+echo "I'm just setting up your valet enviroment, hold on for sec"
+
+if [ -f "$VALET_ENV_FILE" ]; then
+
+    cp "$VALET_ENV_FILE" "${VALET_ENV_FILE}.bak"
+
+    new_entry=" '$REPO_NAME' => [\n 'DB_NAME' => '$REPO_NAME', \n 'AWS_ACCESS_KEY_ID' =>  '$aws_access_key_id', \n 'AWS_SECRET_ACCESS_KEY' => '$aws_secret_access_key', \n],"
+
+    awk -v new_entry="$new_entry" '
+    /#Site SPECIFIC/ {print; print new_entry; next}
+    {print}
+    ' "$VALET_ENV_FILE" > "${VALET_ENV_FILE}.tmp" && mv "${VALET_ENV_FILE}.tmp" "$VALET_ENV_FILE"
+
+    echo "Project config has been added to the root valet-env file"
+else
+    echo "${RED}Project not added to the valet-env file"
+    exit 1
+fi
+
+sleep 1
+
+echo "Just checking your project is fully up-to-date"
+
+if [ ! -f composer.json ] then;
+    echo "Error: composer.json not found"
+    exit 1
+fi
+
+composer update --quiet
+composer install --quiet
+
+if [ $? -eq 0 ]; then
+    echo "Composer has been successfully updated and dependices installed"
+else
+    echo "Failed to update/install Composer dependecies."
+    exit 1;
+fi
+
+sleep 1
+
+echo "I'm going into the plott-os folder now to set it up"
+
+cd "/web/app/themes/plott-os"
+
+echo "I'll now run npm scripts to install the project theme dependices"
+echo "Fist let's make sure you've got a package.json in there"
+
+if [ ! -f package.json ]; then
+    echo "Well, well, well, you're missing package.json"
+else 
+    echo "WooHoo!, I've found your package.json file"
+    echo "Running NPM Install now"
+    npm install
+    if [ $? -eq 0 ]; then
+        echo "NPM Packages have been fully installed"
+        echo "I'll now run npm run production to finish it off"
+        echo "Thats what she said!"
+        npm run production
+    else   
+        echo "Failed to install/update npm"
+        exit 1;
+    fi
+fi
+
+end_time=$(date +%s)
+
+# Calculate duration
+duration=$((end_time - start_time))
+
+# Log duration
+echo "Script execution time: ${duration} seconds"
