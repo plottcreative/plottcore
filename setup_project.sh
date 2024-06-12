@@ -223,7 +223,7 @@ if [ -f "$VALET_ENV_FILE" ]; then
 
     cp "$VALET_ENV_FILE" "${VALET_ENV_FILE}.bak"
 
-    new_entry=" '$REPO_NAME' => [\n 'DB_NAME' => '$REPO_NAME', \n 'AWS_ACCESS_KEY_ID' =>  '$aws_access_key_id', \n 'AWS_SECRET_ACCESS_KEY' => '$aws_secret_access_key', \n],"
+    new_entry=" '$REPO_NAME' => [\n 'DB_NAME' => '$REPO_NAME', \n 'AWS_ACCESS_KEY_ID' =>  '$aws_access_key_id', \n 'AWS_SECRET_ACCESS_KEY' => '$aws_secret_access_key', \n, 'WP_ENV' => 'development', \n 'WP_HOME'=>'http://${REPO_NAME}.test' \n 'WP_SITEURL' =>'http://${REPO_NAME}.test/wp'\n],"
 
     awk -v new_entry="$new_entry" '
     /#SITE SPECIFIC/ {print; print new_entry; next}
@@ -237,6 +237,18 @@ else
 fi
 
 sleep 1
+
+echo "Making your DB, need somewhere to store your porn"
+
+sleep 1
+
+mysql -u root -e "CREATE DATABASE $REPO_NAME;"
+if [ $? -eq 0 ]; then
+    echo "MySQL database $REPO_NAME has been created successfully."
+else
+    echo "Failed to create MySQL database $REPO_NAME."
+    exit 1
+fi
 
 echo "Just checking your project is fully up-to-date"
 
