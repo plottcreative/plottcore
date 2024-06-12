@@ -226,7 +226,7 @@ if [ -f "$VALET_ENV_FILE" ]; then
     new_entry=" '$REPO_NAME' => [\n 'DB_NAME' => '$REPO_NAME', \n 'AWS_ACCESS_KEY_ID' =>  '$aws_access_key_id', \n 'AWS_SECRET_ACCESS_KEY' => '$aws_secret_access_key', \n],"
 
     awk -v new_entry="$new_entry" '
-    /#Site SPECIFIC/ {print; print new_entry; next}
+    /#SITE SPECIFIC/ {print; print new_entry; next}
     {print}
     ' "$VALET_ENV_FILE" > "${VALET_ENV_FILE}.tmp" && mv "${VALET_ENV_FILE}.tmp" "$VALET_ENV_FILE"
 
