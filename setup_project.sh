@@ -259,7 +259,11 @@ sleep 1
 
 echo "I'm going into the plott-os folder now to set it up"
 
-cd "/web/app/themes/plott-os"
+cd "web/app/themes/plott-os"
+
+echo $PWD
+
+sleep 200
 
 echo "I'll now run npm scripts to install the project theme dependices"
 echo "Fist let's make sure you've got a package.json in there"
