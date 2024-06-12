@@ -79,8 +79,7 @@
             "phpcs"
         ],
         "post-create-project-cmd": [
-            "sh setup_github.sh",
-            "sh setup_aws.sh"
+            "sh setup_project.sh"
         ]
     }
 }
