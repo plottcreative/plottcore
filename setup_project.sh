@@ -240,7 +240,7 @@ sleep 1
 
 echo "Just checking your project is fully up-to-date"
 
-if [ ! -f composer.json ] then;
+if [ ! -f composer.json ]; then
     echo "Error: composer.json not found"
     exit 1
 fi
