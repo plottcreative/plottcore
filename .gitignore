@@ -27,3 +27,4 @@ web/.htaccess
 wp-cli.local.yml
 *.lock
 .DS_Store
+/web/app/themes/plott-os
