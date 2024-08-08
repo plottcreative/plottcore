@@ -27,8 +27,8 @@
             ]
         },
         {
-            "type":"composer",
-            "url":"https://connect.advancedcustomfields.com"
+            "type": "composer",
+            "url": "https://connect.advancedcustomfields.com"
         }
     ],
     "require": {
@@ -42,7 +42,10 @@
         "plott/plottcore-wp-config": "^1.0",
         "plott/plottcore-autloader": "^1.0",
         "plott/wp-password-bcrypt": "^1.0",
-        "wpengine/advanced-custom-fields-pro": "^6.3"
+        "wpengine/advanced-custom-fields-pro": "^6.3",
+        "gravityforms/gravityforms": "*",
+        "wpackagist-plugin/amazon-s3-and-cloudfront": "^3.2",
+        "wpackagist-plugin/ewww-image-optimizer": "^7.6"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.7.1",
@@ -63,7 +66,10 @@
         "installer-paths": {
             "web/app/mu-plugins/{$name}/": [
                 "type:wordpress-muplugin",
-                "wpengine/advanced-custom-fields-pro"
+                "wpengine/advanced-custom-fields-pro",
+                "gravityforms/gravityforms",
+                "wpackagist-plugin/amazon-s3-and-cloudfront",
+                "wpackagist-plugin/ewww-image-optimizer"
             ],
             "web/app/plugins/{$name}/": [
                 "type:wordpress-plugin"
