@@ -154,6 +154,37 @@ else
     exit 1
 fi
 
+# Create default secrets
+gh secret set DB_NAME_PROD --body "a" --repo "$ORG_NAME/$REPO_NAME"
+if [ $? -eq 0 ]; then   
+    echo -e "DB_NAME_PROD secret added successfully"
+else
+    echo -e "DB_NAME_PROD secret added unsuccessfully"
+    exit 1
+fi
+gh secret set DB_USER_PROD --body "a" --repo "$ORG_NAME/$REPO_NAME"
+if [ $? -eq 0 ]; then   
+    echo -e "DB_USER_PROD secret added successfully"
+else
+    echo -e "DB_USER_PROD secret added unsuccessfully"
+    exit 1
+fi
+gh secret set DB_PASS_PROD --body "a" --repo "$ORG_NAME/$REPO_NAME"
+if [ $? -eq 0 ]; then   
+    echo -e "DB_PASS_PROD secret added successfully"
+else
+    echo -e "DB_PASS_PROD secret added unsuccessfully"
+    exit 1
+fi
+gh secret set DB_NAME_STAGE --body "a" --repo "$ORG_NAME/$REPO_NAME"
+if [ $? -eq 0 ]; then   
+    echo -e "DB_NAME_STAGE secret added successfully"
+else
+    echo -e "DB_NAME_STAGE secret added unsuccessfully"
+    exit 1
+fi
+
+
 sleep 1
 
 # Create a CloudFront distribution
