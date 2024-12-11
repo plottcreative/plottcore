@@ -45,7 +45,7 @@
         "wpengine/advanced-custom-fields-pro": "^6.3",
         "gravityforms/gravityforms": "*",
         "wpackagist-plugin/amazon-s3-and-cloudfront": "^3.2",
-        "wpackagist-plugin/ewww-image-optimizer": "^7.6",
+        "wpackagist-plugin/ewww-image-optimizer": "^8.0",
         "wpackagist-plugin/cleantalk-spam-protect": "^6.3.9"
     },
     "require-dev": {
