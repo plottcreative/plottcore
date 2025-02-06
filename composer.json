@@ -1,93 +1,94 @@
 {
-    "name": "plott/plottcore",
-    "type": "project",
-    "license": "MIT",
-    "description": "WordPress boilerplate with Composer, easier configuration, and an improved folder structure",
-    "homepage": "https://plott.co.uk/",
-    "authors": [
-        {
-            "name": "Ashley Armstrong",
-            "email": "ashley@plott.co.uk",
-            "role": "Head of Web"
-        }
-    ],
-    "keywords": [
-        "composer",
-        "wordpress",
-        "wp",
-        "wp-config"
-    ],
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://wpackagist.org",
-            "only": [
-                "wpackagist-plugin/*",
-                "wpackagist-theme/*"
-            ]
-        },
-        {
-            "type": "composer",
-            "url": "https://connect.advancedcustomfields.com"
-        }
-    ],
-    "require": {
-        "php": ">=8.0",
-        "composer/installers": "^2.2",
-        "vlucas/phpdotenv": "^5.5",
-        "oscarotero/env": "^2.1",
-        "wpackagist-theme/twentytwentyfour": "^1.0",
-        "plott/plottcore-wordpress": "^6.6.1",
-        "plott/plottcore-wp-installer": "^1.0",
-        "plott/plottcore-wp-config": "^1.0",
-        "plott/plottcore-autloader": "^1.0",
-        "plott/wp-password-bcrypt": "^1.0",
-        "wpengine/advanced-custom-fields-pro": "^6.3",
-        "gravityforms/gravityforms": "*",
-        "wpackagist-plugin/amazon-s3-and-cloudfront": "^3.2",
-        "wpackagist-plugin/ewww-image-optimizer": "^8.0",
-        "wpackagist-plugin/cleantalk-spam-protect": "^6.3.9"
-    },
-    "require-dev": {
-        "squizlabs/php_codesniffer": "^3.7.1",
-        "roave/security-advisories": "dev-latest"
-    },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "allow-plugins": {
-            "composer/installers": true,
-            "roots/wordpress-core-installer": true,
-            "plott/plottcore-wp-installer": true
-        }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "extra": {
-        "installer-paths": {
-            "web/app/mu-plugins/{$name}/": [
-                "type:wordpress-muplugin",
-                "wpengine/advanced-custom-fields-pro",
-                "gravityforms/gravityforms",
-                "wpackagist-plugin/amazon-s3-and-cloudfront",
-                "wpackagist-plugin/ewww-image-optimizer",
-                "wpackagist-plugin/cleantalk-spam-protect"
-            ],
-            "web/app/plugins/{$name}/": [
-                "type:wordpress-plugin"
-            ],
-            "web/app/themes/{$name}/": [
-                "type:wordpress-theme"
-            ]
-        },
-        "wordpress-install-dir": "web/wp"
-    },
-    "scripts": {
-        "test": [
-            "phpcs"
-        ],
-        "post-create-project-cmd": [
-            "sh setup_project.sh"
-        ]
+  "name": "plott/plottcore",
+  "type": "project",
+  "license": "MIT",
+  "description": "WordPress boilerplate with Composer, easier configuration, and an improved folder structure",
+  "homepage": "https://plott.co.uk/",
+  "authors": [
+    {
+      "name": "Ashley Armstrong",
+      "email": "ashley@plott.co.uk",
+      "role": "Head of Web"
     }
+  ],
+  "keywords": [
+    "composer",
+    "wordpress",
+    "wp",
+    "wp-config"
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://wpackagist.org",
+      "only": [
+        "wpackagist-plugin/*",
+        "wpackagist-theme/*"
+      ]
+    },
+    {
+      "type": "composer",
+      "url": "https://connect.advancedcustomfields.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.0",
+    "composer/installers": "^2.2",
+    "vlucas/phpdotenv": "^5.5",
+    "oscarotero/env": "^2.1",
+    "wpackagist-theme/twentytwentyfour": "^1.0",
+    "plott/plottcore-wordpress": "^6.6.1",
+    "plott/plottcore-wp-installer": "^1.0",
+    "plott/plottcore-wp-config": "^1.0",
+    "plott/plottcore-autloader": "^1.0",
+    "plott/wp-password-bcrypt": "^1.0",
+    "wpengine/advanced-custom-fields-pro": "^6.3",
+    "gravityforms/gravityforms": "*",
+    "wpackagist-plugin/amazon-s3-and-cloudfront": "^3.2",
+    "wpackagist-plugin/ewww-image-optimizer": "^8.0",
+    "wpackagist-plugin/cleantalk-spam-protect": "^6.3.9"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.7.1",
+    "roave/security-advisories": "dev-latest"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "allow-plugins": {
+      "composer/installers": true,
+      "roots/wordpress-core-installer": true,
+      "plott/plottcore-wp-installer": true
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "extra": {
+    "installer-paths": {
+      "web/app/mu-plugins/{$name}/": [
+        "type:wordpress-muplugin",
+        "wpengine/advanced-custom-fields-pro",
+        "gravityforms/gravityforms",
+        "wpackagist-plugin/amazon-s3-and-cloudfront",
+        "wpackagist-plugin/ewww-image-optimizer",
+        "wpackagist-plugin/cleantalk-spam-protect"
+      ],
+      "web/app/plugins/{$name}/": [
+        "type:wordpress-plugin"
+      ],
+      "web/app/themes/{$name}/": [
+        "type:wordpress-theme"
+      ]
+    },
+    "wordpress-install-dir": "web/wp"
+  },
+  "scripts": {
+    "test": [
+      "phpcs"
+    ],
+    "post-create-project-cmd": [
+      "sh setup_project.sh"
+    ]
+  },
+  "version": "1.2.0"
 }
