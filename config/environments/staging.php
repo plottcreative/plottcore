@@ -15,3 +15,5 @@ use Plott\PlottcoreWpConfig\Config;
  */
 
 Config::define('DISALLOW_INDEXING', true);
+
+Config::define('WP_CONTENT_URL', Config::get('WP_HOME') . '/web' . Config::get('CONTENT_DIR'));
