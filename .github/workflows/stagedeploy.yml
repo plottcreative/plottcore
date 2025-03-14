@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v1
 
       - name: Get Site Path
         id: sitepath
@@ -100,6 +100,20 @@ jobs:
           key: ${{ secrets.PLOTTDEPLOY_KEY }}
           port: ${{ secrets.SSH_PORT }}
 
+      - name: Configure sparse-checkout to exclude changelog.md
+        if: steps.recheckgitrepo.outcome == 'success'
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{steps.stagefolder.outputs.data}}
+            git config core.sparseCheckout true
+            echo "/*" > .git/info/sparse-checkout
+            echo "!changelog.md" >> .git/info/sparse-checkout
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
       - name: Pull Changes
         id: pullchanges
         if: steps.recheckgitrepo.outcome == 'success'
@@ -123,12 +137,28 @@ jobs:
             cat << 'EOF' > ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{steps.stagefolder.outputs.data}}/.env
             DB_NAME=${{ secrets.DB_NAME_STAGE }}
             DB_USER=${{ secrets.PLOTT_STAGE_USER }}
-            DB_PASS=${{ secrets.PLOTT_STAGE_PASS }}
+            DB_PASSWORD=${{ secrets.PLOTT_STAGE_PASS }}
+            
+            # Optionally, you can use a data source name (DSN)
+            # When using a DSN, you can remove the DB_NAME, DB_USER, DB_PASSWORD, and DB_HOST variables
+            # DATABASE_URL='mysql://database_user:database_password@database_host:database_port/database_name'
+            
+            # Optional database variables
             DB_HOST=${{ secrets.DB_HOST }}
-            DB_CHARSET=${{ secrets.DB_CHARSET }}
-            TABLE_PREFIX=${{ secrets.TABLE_PREFIX }}
-            ACF_PRO_LICENSE=${{ secrets.PLOTT_ACF_KEY }}
-            GF_LICENSE_KEY=${{ secrets.PLOTT_GRAVITY_KEY }}
+            DB_PREFIX=${{ secrets.TABLE_PREFIX }}
+            
+            WP_HOME='https://stage.plott.co.uk/${{ steps.stagefolder.outputs.data }}'
+            WP_SITEURL="${WP_HOME}/web/wp"
+            WP_ENV='staging'
+            
+            # Specify optional debug.log path
+            # WP_DEBUG_LOG='/path/to/debug.log'
+            
+            # Add AWS credentials
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            
+            # Generate your keys here: https://plott.co.uk/salts.html
             AUTH_KEY=${{ secrets.AUTH_KEY }}
             SECURE_AUTH_KEY=${{ secrets.SECURE_AUTH_KEY }}
             LOGGED_IN_KEY=${{ secrets.LOGGED_IN_KEY }}
@@ -137,6 +167,7 @@ jobs:
             SECURE_AUTH_SALT=${{ secrets.SECURE_AUTH_SALT }}
             LOGGED_IN_SALT=${{ secrets.LOGGED_IN_SALT }}
             NONCE_SALT=${{ secrets.NONCE_SALT }}
+            
             EOF
           host: ${{ secrets.SOLO_HOST }}
           user: ${{ secrets.PLOTTDEPLOY_USER }}
@@ -155,6 +186,15 @@ jobs:
           key: ${{ secrets.PLOTTDEPLOY_KEY }}
           port: ${{ secrets.SSH_PORT }}
 
+      - name: Install Composer Gravity Forms Plugin
+        id: installgravityformsplugin
+        run: |
+          composer global config --no-plugins allow-plugins.piotrpress/composer-gravityforms true
+          composer global require piotrpress/composer-gravityforms
+          composer config --global http-basic.gravityapi.com key ${{ secrets.PLOTT_GRAVITY_KEY }}
+        env:
+          COMPOSER_ALLOW_SUPERUSER: "1"
+
       - name: Install Root Composer dependencies
         if: steps.checkrootcomposer.outcome == 'success'
         id: installrootcomposer
@@ -171,6 +211,7 @@ jobs:
 
       - name: Build Theme
         if: steps.installrootcomposer.outcome == 'success'
+        id: buildTheme
         uses: fifsky/ssh-action@master
         with:
           command: |
@@ -178,6 +219,20 @@ jobs:
             npm install --quiet --no-progress --unsafe-perm=true --allow-root
             npm run prod
             rm -rf node_modules
+          host: ${{ secrets.SOLO_HOST }}
+          user: ${{ secrets.PLOTTDEPLOY_USER }}
+          key: ${{ secrets.PLOTTDEPLOY_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+      - name: Theme Composer Install
+        if: steps.buildTheme.outcome == 'success'
+        id: installComposerTheme
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{steps.stagefolder.outputs.data}}${{ steps.themepath.outputs.data }}
+            composer update
+            composer install
           host: ${{ secrets.SOLO_HOST }}
           user: ${{ secrets.PLOTTDEPLOY_USER }}
           key: ${{ secrets.PLOTTDEPLOY_KEY }}
