@@ -29,6 +29,10 @@
     {
       "type": "composer",
       "url": "https://connect.advancedcustomfields.com"
+    },
+    {
+      "type": "composer",
+      "url": "https://composer.gravity.io"
     }
   ],
   "require": {
@@ -43,7 +47,7 @@
     "plott/plottcore-autloader": "^1.0",
     "plott/wp-password-bcrypt": "^1.0",
     "wpengine/advanced-custom-fields-pro": "^6.3",
-    "gravityforms/gravityforms": "*",
+    "gravity/gravityforms": "*",
     "wpackagist-plugin/amazon-s3-and-cloudfront": "^3.2",
     "wpackagist-plugin/ewww-image-optimizer": "^8.0",
     "wpackagist-plugin/cleantalk-spam-protect": "^6.3.9"
@@ -68,7 +72,7 @@
       "web/app/mu-plugins/{$name}/": [
         "type:wordpress-muplugin",
         "wpengine/advanced-custom-fields-pro",
-        "gravityforms/gravityforms",
+        "graivyt/gravityforms",
         "wpackagist-plugin/amazon-s3-and-cloudfront",
         "wpackagist-plugin/ewww-image-optimizer",
         "wpackagist-plugin/cleantalk-spam-protect"
