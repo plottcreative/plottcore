@@ -37,7 +37,7 @@
     "vlucas/phpdotenv": "^5.5",
     "oscarotero/env": "^2.1",
     "wpackagist-theme/twentytwentyfour": "^1.0",
-    "plott/plottcore-wordpress": "^6.6.1",
+    "plott/plottcore-wordpress": "*",
     "plott/plottcore-wp-installer": "^1.0",
     "plott/plottcore-wp-config": "^1.0",
     "plott/plottcore-autloader": "^1.0",
