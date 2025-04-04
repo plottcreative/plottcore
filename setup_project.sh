@@ -273,21 +273,6 @@ echo "Making your DB, need somewhere to store your porn"
 
 sleep 1
 
-mysql -u root -e "CREATE DATABASE \`$REPO_NAME\`;"
-if [ $? -eq 0 ]; then
-    echo "MySQL database $REPO_NAME has been created successfully."
-else
-    echo "Failed to create MySQL database $REPO_NAME."
-    exit 1
-fi
-
-echo "Just checking your project is fully up-to-date"
-
-if [ ! -f composer.json ]; then
-    echo "Error: composer.json not found"
-    exit 1
-fi
-
 composer update --quiet
 composer install --quiet
 
