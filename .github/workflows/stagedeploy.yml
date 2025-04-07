@@ -186,15 +186,6 @@ jobs:
           key: ${{ secrets.PLOTTDEPLOY_KEY }}
           port: ${{ secrets.SSH_PORT }}
 
-      - name: Install Composer Gravity Forms Plugin
-        id: installgravityformsplugin
-        run: |
-          composer global config --no-plugins allow-plugins.piotrpress/composer-gravityforms true
-          composer global require piotrpress/composer-gravityforms
-          composer config --global http-basic.gravityapi.com key ${{ secrets.PLOTT_GRAVITY_KEY }}
-        env:
-          COMPOSER_ALLOW_SUPERUSER: "1"
-
       - name: Install Root Composer dependencies
         if: steps.checkrootcomposer.outcome == 'success'
         id: installrootcomposer
