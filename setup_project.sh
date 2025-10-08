@@ -6,7 +6,9 @@ ORG_NAME="plottcreative"
 REPO_NAME=$(basename "$PWD")
 
 # Sort out ddev
-ddev config && ddev add-on get ddev/ddev-adminer && ddev start
+ddev config --project-name "$REPO_NAME" --project-type=php --docroot=web \
+  && ddev add-on get ddev/ddev-adminer \
+  && ddev start
 
 # Check if Git exists
 if [ -d .git ]; then
@@ -38,7 +40,7 @@ gh repo create $ORG_NAME/$REPO_NAME --private --confirm
 
 # Check if the repo was succesfully created
 if [ $? -ne 0 ]; then
-    echo "Faile to create GitHub Repo"
+    echo "Failed to create GitHub Repo"
     exit 1;
 fi
 
@@ -200,49 +202,34 @@ sleep 1
 # Create a CloudFront distribution
 distribution_config=$(cat <<EOF
 {
-    "CallerReference": "$REPO_NAME-$(date +%s)",
-    "Comment": "$REPO_NAME distribution",
-    "Enabled": true,
-    "Origins": {
-        "Items": [
-            {
-                "Id": "$REPO_NAME",
-                "DomainName": "$REPO_NAME.s3.amazonaws.com",
-                "S3OriginConfig": {
-                    "OriginAccessIdentity": ""
-                }
-            }
-        ].
-        "Quantity": 1
+"CallerReference": "${REPO_NAME}-$(date +%s)",
+  "Comment": "${REPO_NAME} distribution",
+  "Enabled": true,
+  "Origins": {
+    "Quantity": 1,
+    "Items": [
+      {
+        "Id": "${REPO_NAME}}",
+        "DomainName": "${REPO_NAME}.s3.${aws_region}.amazonaws.com",
+        "S3OriginConfig": { "OriginAccessIdentity": "" }
+      }
+    ]
+  },
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "${REPO_NAME}",
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "AllowedMethods": {
+      "Quantity": 2,
+      "Items": ["GET","HEAD"],
+      "CachedMethods": { "Quantity": 2, "Items": ["GET","HEAD"] }
     },
-    "DefaultCacheBehavior": {
-        "TargetOriginId": "$REPO_NAME",
-        "ViewerProtocolPolicy": "redirect-to-https",
-        "AllowedMethods": {
-            "Items": ["GET", "HEAD"],
-            "Quantity": 2,
-            "CachedMethods": {
-                "Items": ["GET", "HEAD"],
-                "Quantity": 2
-            }
-        },
-        "Compress": true,
-        "ForwardedValues": {
-            "QueryString": false,
-            "Cookies": {
-                "Forward": "none"
-            }
-        },
-        "MinTTL": 0,
-        "DefaultTTL": 86400,
-        "MaxTTL": 31536000
-    },
-    "ViewerCertificate": {
-        "CloudFrontDefaultCertificate": true,
-        "MinimumProtocolVersion": "TLSv1.2_2021"
-    },
-    "HttpVersion": "https",
-    "IsIPV6Enabled": true
+    "Compress": true,
+    "ForwardedValues": { "QueryString": false, "Cookies": { "Forward": "none" } },
+    "MinTTL": 0, "DefaultTTL": 86400, "MaxTTL": 31536000
+  },
+  "ViewerCertificate": { "CloudFrontDefaultCertificate": true, "MinimumProtocolVersion": "TLSv1.2_2021" },
+  "HttpVersion": "http2",
+  "IsIPV6Enabled": true
 }
 EOF
 )
