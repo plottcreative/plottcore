@@ -10,6 +10,8 @@ ddev config --project-name "$REPO_NAME" --project-type=php --docroot=web \
   && ddev add-on get ddev/ddev-adminer \
   && ddev start
 
+cd ~/Projects/$REPO_NAME
+
 # Check if Git exists
 if [ -d .git ]; then
     echo "Git repo is already setup in this directory"
