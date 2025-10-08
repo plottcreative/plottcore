@@ -122,7 +122,7 @@ sleep 1
 
 echo "Assigning the correct permissions"
 
-aws iam attach-user-policy --user-name "$iam_user_name" --policy-arm "$policy_arn"
+aws iam attach-user-policy --user-name "$iam_user_name" --policy-arn "$policy_arn"
 
 if [ $? -eq 0 ]; then
     echo -e "Policy attached to the the bucket"
