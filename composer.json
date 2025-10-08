@@ -33,6 +33,10 @@
     {
       "type": "composer",
       "url": "https://composer.gravity.io"
+    },
+    {
+      "type": "composer",
+      "url": "https://plottcreative.repo.repman.io"
     }
   ],
   "require": {
@@ -40,17 +44,19 @@
     "composer/installers": "^2.2",
     "vlucas/phpdotenv": "^5.5",
     "oscarotero/env": "^2.1",
-    "wpackagist-theme/twentytwentyfour": "^1.0",
+    "wpackagist-theme/twentytwentyfive": "^1.0",
     "plott/plottcore-wordpress": "*",
-    "plott/plottcore-wp-installer": "^1.0",
-    "plott/plottcore-wp-config": "^1.0",
-    "plott/plottcore-autloader": "^1.0",
-    "plott/wp-password-bcrypt": "^1.0",
+    "plott/plottcore-wp-installer": "*",
+    "plott/plottcore-wp-config": "*",
+    "plott/plottcore-autloader": "*",
+    "plott/wp-password-bcrypt": "*",
     "wpengine/advanced-custom-fields-pro": "^6.3",
     "gravity/gravityforms": "*",
     "wpackagist-plugin/amazon-s3-and-cloudfront": "^3.2",
     "wpackagist-plugin/ewww-image-optimizer": "^8.0",
-    "wpackagist-plugin/cleantalk-spam-protect": "^6.3.9"
+    "wpackagist-plugin/cleantalk-spam-protect": "^6.3.9",
+    "wpackagist-plugin/wp-super-cache": "*",
+    "ashleyarmstrong/plott-gf": "*"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^4.0.0",
@@ -72,10 +78,12 @@
       "web/app/mu-plugins/{$name}/": [
         "type:wordpress-muplugin",
         "wpengine/advanced-custom-fields-pro",
-        "graivyt/gravityforms",
+        "gravity/gravityforms",
         "wpackagist-plugin/amazon-s3-and-cloudfront",
         "wpackagist-plugin/ewww-image-optimizer",
-        "wpackagist-plugin/cleantalk-spam-protect"
+        "wpackagist-plugin/cleantalk-spam-protect",
+        "wpackagist-plugin/wp-super-cache",
+        "ashleyarmstrong/plott-gf"
       ],
       "web/app/plugins/{$name}/": [
         "type:wordpress-plugin"
@@ -89,6 +97,12 @@
   "scripts": {
     "test": [
       "phpcs"
+    ],
+    "pre-update-cmd": [
+      "php save_composer_lock.php"
+    ],
+    "post-update-cmd": [
+      "php log_changelog.php"
     ],
     "post-create-project-cmd": [
       "sh setup_project.sh"

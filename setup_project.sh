@@ -2,29 +2,47 @@
 start_time=$(date +%s)
 # GitHub organization
 ORG_NAME="plottcreative"
-
 # Get the current directory name as the repository name
 REPO_NAME=$(basename "$PWD")
 
-#Get the Valet Env File
-VALET_ENV_FILE="../.valet-env.php"
+# Sort out ddev
+ddev config && ddev add-on get ddev/ddev-adminer && ddev start
 
-# Check if the current directory is already a git repository
+# Check if Git exists
 if [ -d .git ]; then
-    echo "Git repository is already set up in this directory."
+    echo "Git repo is already setup in this directory"
     exit 1
 fi
 
-# Create a new private GitHub repository under the specified organization using the GitHub CLI
+# Clone PLOTT OS and remove the .git folder
+git clone https://github.com/plottcreative/plott-os web/app/themes/plott-os
+
+if [ $? -eq 0 ]; then
+    echo "plott-os repo cloned successfully into web/app/themes."
+else
+    echo "Failed to clone the PLOTT OS"
+    exit 1
+fi
+
+sleep 2
+
+echo "Removing .git for plott-os"
+
+cd web/app/themes/plott-os
+rm -rf .git
+
+cd ~/Projects/$REPO_NAME
+
+# Create a new private GitHub repo under the PLOTT org using the GitHub CLI
 gh repo create $ORG_NAME/$REPO_NAME --private --confirm
 
-# Check if the repository was created successfully
+# Check if the repo was succesfully created
 if [ $? -ne 0 ]; then
-    echo "Failed to create GitHub repository"
-    exit 1
+    echo "Faile to create GitHub Repo"
+    exit 1;
 fi
 
-# Initialize git repository
+# Init Git Repo
 git init
 
 # Add all files and commit
@@ -44,27 +62,12 @@ git push -u origin stage
 git checkout -b develop
 git push -u origin develop
 
-# Switch back to main
-git checkout main
-
-# Clone the plott-os repository into web/app/themes
-git clone https://github.com/plottcreative/plott-os web/app/themes/plott-os
-
-# Check if the cloning was successful
-if [ $? -eq 0 ]; then
-    echo "plott-os repository cloned successfully into web/app/themes."
-else
-    echo "Failed to clone plott-os repository."
-    exit 1
-fi
-
-# AWS configuration
+# AWS Config
 aws_region="eu-west-1"
 bucket_name="${REPO_NAME}-s3-bucket"
 
-# Check if AWS is configured
 if ! aws configure list-profiles | grep -q default; then
-    echo "Oh no you've not configured your AWS creds"
+    echo "Ahh Snap you've not got AWS configured"
     echo "Enter your AWS Key ID:"
     read aws_key_id
     echo "Enter your AWS Key Secret:"
@@ -74,83 +77,91 @@ if ! aws configure list-profiles | grep -q default; then
     aws configure set aws_secret_access_key $aws_key_secret
     aws configure set default.region $aws_region
 else
-    echo "Good lad you've already got AWS setup"
-    echo "I'll use your current AWS Config"
+    echo "AWS already configured"
+    echo "GOOD BOY"
+    sleep 2
 fi
 
-echo "Checking if the bucket already exists..."
+echo "Let's see if this bucket already exists"
 sleep 1
 
 if aws s3api head-bucket --bucket "$bucket_name" 2>/dev/null; then
-    echo -e "${RED}Bucket ${bucket_name} already exists! Exiting...${NC}"
+    echo -e "Bucket already in existance! Exiting..."
     exit 1
+    sleep 1
 fi
 
-echo "Making your bucket for ya lad, bear with me"
+echo "Making your bucket now"
 sleep 1
+
 aws s3api create-bucket --bucket "$bucket_name" --region "$aws_region" --create-bucket-configuration LocationConstraint="$aws_region"
 sleep 1
+
 if [ $? -eq 0 ]; then
-    echo -e "${GRN}Alright then!${NC} We're good to go with the bucket, that's been created"
+    echo -e "Bucket has been created"
 else
-    echo -e "${RED}Ahh shit!${NC} We couldn't create that bucket, I wonder if the bucket has already been created"
-    exit 1
+    echo -e "Ahh, the bucket can't be created, this will have to be done manually"
 fi
 
 iam_user_name="${REPO_NAME}-s3-user"
 sleep 1
-echo "Right so your bucket has been made, let's make a user to access the bucket"
+echo "Creating Bucket Access"
 
 aws iam create-user --user-name "$iam_user_name"
 
-if [ $? -eq 0 ]; then
-    echo -e "${GRN}Sound mate${NC}, your user has been made"
-else
-    echo -e "${RED}Oops${NC}, I couldn't create the user, are you sure they're not currently a user?"
+
+if [ $? -eq 0 ]; then 
+    echo -e "AWS IAM User created"
+else 
+    echo -e "User creation failed, this will have to be done manually"
     exit 1
 fi
 
 policy_arn="arn:aws:iam::aws:policy/AmazonS3FullAccess"
 sleep 1
-echo "Cool your user has been created, let's give it the right permissions"
-aws iam attach-user-policy --user-name "$iam_user_name" --policy-arn "$policy_arn"
+
+echo "Assigning the correct permissions"
+
+aws iam attach-user-policy --user-name "$iam_user_name" --policy-arm "$policy_arn"
 
 if [ $? -eq 0 ]; then
-    echo -e "${GRN}We can access the bucket now${NC}, how cool is that??"
+    echo -e "Policy attached to the the bucket"
 else 
-    echo -e "${RED}You shall not pass!${NC} The policy hasn't been attached to the user"
+    echo -e "Policy not attached, this will have to be done manually"
     exit 1
 fi
 
 sleep 1
-echo "Let's get some keys to unlock your door"
+echo "Generating Access Keys"
 
 aws iam create-access-key --user-name "$iam_user_name" > iam_user_creds.json
 
 if [ $? -eq 0 ]; then
-    echo "We've got the keys, we've got the secret"
+    echo "Access keys created and save to iam_user_creds.json"
 else
-    echo "Oops, you've been locked out!"
+    echo "Access keys failed to generate, this will have to be done manually"
     exit 1
 fi
 
 aws_access_key_id=$(jq -r '.AccessKey.AccessKeyId' iam_user_creds.json)
 aws_secret_access_key=$(jq -r '.AccessKey.SecretAccessKey' iam_user_creds.json)
 
-# Upload GitHub secrets
+sleep 1
+echo "Adding AWS Keys to GitHub"
+
 gh secret set AWS_ACCESS_KEY_ID --body "$aws_access_key_id" --repo "$ORG_NAME/$REPO_NAME"
 if [ $? -eq 0 ]; then
-    echo -e "${GRN}GitHub secret AWS_ACCESS_KEY_ID set successfully.${NC}"
+    echo "GitHub secret AWS_ACCESS_KEY_ID set successfully"
 else
-    echo -e "${RED}Failed to set GitHub secret AWS_ACCESS_KEY_ID.${NC}"
+    echp "Failed to add AWS_ACCESS_KEY_ID secret into Git Hub"
     exit 1
 fi
 
 gh secret set AWS_SECRET_ACCESS_KEY --body "$aws_secret_access_key" --repo "$ORG_NAME/$REPO_NAME"
 if [ $? -eq 0 ]; then
-    echo -e "${GRN}GitHub secret AWS_SECRET_ACCESS_KEY set successfully.${NC}"
+    echo "GitHub secret AWS_SECRET_ACCESS_KEY set successfully"
 else
-    echo -e "${RED}Failed to set GitHub secret AWS_SECRET_ACCESS_KEY.${NC}"
+    echp "Failed to add AWS_SECRET_ACCESS_KEY secret into Git Hub"
     exit 1
 fi
 
@@ -184,29 +195,28 @@ else
     exit 1
 fi
 
-
 sleep 1
 
 # Create a CloudFront distribution
 distribution_config=$(cat <<EOF
 {
-    "CallerReference": "$theme_name-$(date +%s)",
-    "Comment": "$theme_name distribution",
+    "CallerReference": "$REPO_NAME-$(date +%s)",
+    "Comment": "$REPO_NAME distribution",
     "Enabled": true,
     "Origins": {
         "Items": [
             {
-                "Id": "$bucket_name",
-                "DomainName": "$bucket_name.s3.amazonaws.com",
+                "Id": "$REPO_NAME",
+                "DomainName": "$REPO_NAME.s3.amazonaws.com",
                 "S3OriginConfig": {
                     "OriginAccessIdentity": ""
                 }
             }
-        ],
+        ].
         "Quantity": 1
     },
     "DefaultCacheBehavior": {
-        "TargetOriginId": "$bucket_name",
+        "TargetOriginId": "$REPO_NAME",
         "ViewerProtocolPolicy": "redirect-to-https",
         "AllowedMethods": {
             "Items": ["GET", "HEAD"],
@@ -231,45 +241,44 @@ distribution_config=$(cat <<EOF
         "CloudFrontDefaultCertificate": true,
         "MinimumProtocolVersion": "TLSv1.2_2021"
     },
-    "HttpVersion": "http2",
+    "HttpVersion": "https",
     "IsIPV6Enabled": true
 }
 EOF
 )
 
-distribution_id=$(aws cloudfront create-distribution --distribution-config "$distribution_config" | jq -r '.Distribution.Id')
+distribution_id=$(aws cloudfront create-distribution --distribution-config "$distribution_config" | jq -r '.Distributuin.Id')
 
 if [ -n "$distribution_id" ]; then
-    echo "CloudFront distribution $distribution_id has been created successfully."
-else
-    echo "Failed to create CloudFront distribution."
+    echo "CloudFront Distribution $distribution_id has been created successfully"
+else 
+    echo "Failed to create a CloudFront distribution"
     exit 1
 fi
 
 sleep 1
 
-echo "I'm just setting up your valet enviroment, hold on for sec"
+echo "Setting up the .env"
 
-if [ -f "$VALET_ENV_FILE" ]; then
+ENV_FILE=".env"
 
-    cp "$VALET_ENV_FILE" "${VALET_ENV_FILE}.bak"
-
-    new_entry=" '$REPO_NAME' => [\n 'DB_NAME' => '$REPO_NAME', \n 'AWS_ACCESS_KEY_ID' =>  '$aws_access_key_id', \n 'AWS_SECRET_ACCESS_KEY' => '$aws_secret_access_key', \n 'WP_ENV' => 'development', \n 'WP_HOME'=>'http://${REPO_NAME}.test', \n 'WP_SITEURL' =>'http://${REPO_NAME}.test/wp'\n],"
-
-    awk -v new_entry="$new_entry" '
-    /#SITE SPECIFIC/ {print; print new_entry; next}
-    {print}
-    ' "$VALET_ENV_FILE" > "${VALET_ENV_FILE}.tmp" && mv "${VALET_ENV_FILE}.tmp" "$VALET_ENV_FILE"
-
-    echo "Project config has been added to the root valet-env file"
-else
-    echo "${RED}Project not added to the valet-env file"
-    exit 1
+if [ -f "$ENV_FILE" ]; then
+    cp "$ENV_FILE" "${ENV_FILE}.bak"
+    echo "Existing .env file backed up as .env.bak"
 fi
 
-sleep 1
+cat > "$ENV_FILE" <<EOL
+# --- Project Environment Variables ---
+APP_NAME=$REPO_NAME
+DB_NAME=$DB_NAME
+AWS_ACCESS_KEY_ID=$aws_access_key_id
+AWS_SECRET_ACCESS_KEY=$aws_secret_access_key
+WP_ENV=development
+WP_HOME=http://${REPO_NAME}.ddev.site
+WP_SITEURL=http://${REPO_NAME}.ddev.site/wp
+EOL
 
-echo "Making your DB, need somewhere to store your porn"
+echo ".env file has been created/updated successfully."
 
 sleep 1
 
@@ -277,44 +286,58 @@ composer update --quiet
 composer install --quiet
 
 if [ $? -eq 0 ]; then
-    echo "Composer has been successfully updated and dependices installed"
-else
-    echo "Failed to update/install Composer dependecies."
-    exit 1;
+    echo "Composer updated and dependecies installed"
+else 
+    echo "Failed to update/install dependecies"
 fi
 
 sleep 1
 
-echo "I'm going into the plott-os folder now to set it up"
+echo "Setting up the theme"
 
 cd "web/app/themes/plott-os"
+sleep 1
+
+echo "Checking if there is a package.json"
+
+if [ ! -f package.json ]; then
+    echo "package.json is missing"
+    exit 1;
+else 
+    echo "package.json found"
+    echo "installing NPM packages"
+    npm i
+    if [ $? -eq 0 ]; then
+        echo "NPM packages successfully installed"
+        echo "Running a npm run prod to check"
+        npm run prod
+    else
+        echo "Failed to install/update npm"
+        exit 1
+    fi
+fi
 
 sleep 1
 
-echo "I'll now run npm scripts to install the project theme dependices"
-echo "Fist let's make sure you've got a package.json in there"
+echo "Checking if composer.json is there"
 
-if [ ! -f package.json ]; then
-    echo "Well, well, well, you're missing package.json"
-else 
-    echo "WooHoo!, I've found your package.json file"
-    echo "Running NPM Install now"
-    npm install
-    if [ $? -eq 0 ]; then
-        echo "NPM Packages have been fully installed"
-        echo "I'll now run npm run production to finish it off"
-        echo "Thats what she said!"
-        npm run production
-    else   
-        echo "Failed to install/update npm"
-        exit 1;
+if [ ! -f composer.json ]; then
+    echo "composer.json is missing"
+else
+    echo "composer.json found"
+    echo "installing composer packages"
+    composer update
+    composer install
+    if[ $? -eq 0 ]; then
+        echo "Composer installed completely"
+    else
+        echo "Failed to installed composer dependieces"
     fi
 fi
 
 end_time=$(date +%s)
 
-# Calculate duration
-duration=$((end_time - start_time))
+duration=$((end_time-start_time))
 
-# Log duration
-echo "Script execution time: ${duration} seconds"
+echo "Setup completed time: ${duration}s"
+

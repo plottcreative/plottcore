@@ -1,8 +1,9 @@
 # Application
 web/app/plugins/*
+web/app/mu-plugins/*
 !web/app/plugins/.gitkeep
 web/app/mu-plugins/*/
-web/app/themes/twentytwentyfour/
+web/app/themes/twentytwentyfive/
 web/app/upgrade
 web/app/uploads/*
 !web/app/uploads/.gitkeep
@@ -27,4 +28,6 @@ web/.htaccess
 wp-cli.local.yml
 *.lock
 .DS_Store
-/web/app/themes/plott-os
+!/web/app/themes/plott-os
+
+/node_modules/

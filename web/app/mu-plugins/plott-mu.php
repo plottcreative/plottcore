@@ -7,9 +7,10 @@
  * Version: 1.0
  */
 
-// Load the ACF plugin.
-
 require_once WPMU_PLUGIN_DIR . '/advanced-custom-fields-pro/acf.php';
 require_once WPMU_PLUGIN_DIR . '/gravityforms/gravityforms.php';
-//require_once WPMU_PLUGIN_DIR . '/amazon-s3-and-cloudfront/wordpress-s3.php';
-//require_once WPMU_PLUGIN_DIR . '/ewww-image-optimizer/ewww-image-optimizer.php';
+require_once WPMU_PLUGIN_DIR . '/amazon-s3-and-cloudfront/wordpress-s3.php';
+require_once WPMU_PLUGIN_DIR . '/ewww-image-optimizer/ewww-image-optimizer.php';
+require_once WPMU_PLUGIN_DIR . '/plott-gf/plott-gf.php';
+require_once WPMU_PLUGIN_DIR . '/cleantalk-spam-protect/cleantalk.php';
+require_once WPMU_PLUGIN_DIR . '/wp-super-cache/wp-cache.php';

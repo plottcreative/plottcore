@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v1
 
       - name: Get Site Path
         id: sitepath
@@ -110,10 +110,41 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            cp ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}.env.example ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}.env
-              echo "DB_NAME=${{ secrets.DB_NAME_PROD }}" >> ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}.env
-              echo "DB_USER=${{ secrets.DB_USER_PROD }}" >> ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}.env
-              echo "DB_PASS=${{ secrets.DB_PASS_PROD }}" >> ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}.env
+            cat << 'EOF' > ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}${{steps.stagefolder.outputs.data}}/.env
+             DB_NAME=${{ secrets.DB_NAME_PROD }}
+             DB_USER=${{ secrets.DB_USER_PROD }}
+             DB_PASSWORD=${{ secrets.DB_PASS_PROD }}
+            
+             # Optionally, you can use a data source name (DSN)
+             # When using a DSN, you can remove the DB_NAME, DB_USER, DB_PASSWORD, and DB_HOST variables
+             # DATABASE_URL='mysql://database_user:database_password@database_host:database_port/database_name'
+            
+             # Optional database variables
+             DB_HOST=${{ secrets.DB_HOST }}
+             DB_PREFIX=${{ secrets.TABLE_PREFIX }}
+            
+             WP_ENV='production'
+             WP_HOME='https://plott.co.uk'
+             WP_SITEURL="${WP_HOME}/web/wp"
+            
+             # Specify optional debug.log path
+             # WP_DEBUG_LOG='/path/to/debug.log'
+            
+             # Add AWS credentials
+             AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+             AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            
+             # Generate your keys here: https://plott.co.uk/salts.html
+             AUTH_KEY=${{ secrets.AUTH_KEY }}
+             SECURE_AUTH_KEY=${{ secrets.SECURE_AUTH_KEY }}
+             LOGGED_IN_KEY=${{ secrets.LOGGED_IN_KEY }}
+             NONCE_KEY=${{ secrets.NONCE_KEY }}
+             AUTH_SALT=${{ secrets.AUTH_SALT }}
+             SECURE_AUTH_SALT=${{ secrets.SECURE_AUTH_SALT }}
+             LOGGED_IN_SALT=${{ secrets.LOGGED_IN_SALT }}
+             NONCE_SALT=${{ secrets.NONCE_SALT }}
+            EOF
+             
           host: ${{ secrets.SOLO_HOST }}
           user: ${{ secrets.PLOTTDEPLOY_USER }}
           key: ${{ secrets.PLOTTDEPLOY_KEY }}
@@ -138,7 +169,7 @@ jobs:
         with:
           command: |
             cd ${{ secrets.PLOTT_ROOT_DIR }}${{ steps.sitepath.outputs.data }}
-            composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev --no-scripts
           host: ${{ secrets.SOLO_HOST }}
           user: ${{ secrets.PLOTTDEPLOY_USER }}
           key: ${{ secrets.PLOTTDEPLOY_KEY }}
