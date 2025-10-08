@@ -300,7 +300,7 @@ install_dependencies() {
         (cd "$THEME_DIR" && npm install)
         success "NPM dependencies installed."
         info "Running initial asset build..."
-        (cd "$THEME_DIR" && npm run build)
+        (cd "$THEME_DIR" && npm run prod)
         success "Asset build complete."
     else
         warning "package.json not found in ${THEME_DIR}. Skipping NPM steps."
