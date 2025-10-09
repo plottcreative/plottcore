@@ -307,7 +307,7 @@ install_dependencies() {
     fi
 
     info "Installing theme Composer dependencies..."
-    if [ -f "${THEME_DIR}/composer.jso" ]; then
+    if [ -f "${THEME_DIR}/composer.json" ]; then
         (cd "${THEME_DIR}" && composer install)
         success "Composer dependencies installed"
     else
