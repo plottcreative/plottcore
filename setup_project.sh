@@ -305,6 +305,14 @@ install_dependencies() {
     else
         warning "package.json not found in ${THEME_DIR}. Skipping NPM steps."
     fi
+
+    info "Installing theme Composer dependencies..."
+    if [ -f "${THEME_DIR}/composer.jso" ]; then
+        (cd "${THEME_DIR}" && composer install)
+        success "Composer dependencies installed"
+    else
+        warning "composer.json not found in ${THEME_DIR}. Skipping Composer steps."
+    fi
 }
 
 
